@@ -10,6 +10,7 @@ NEEDED = {"cup", "bowl", "knife"}       # YOLO26 already knows these
 HOLD_SECONDS = 1.5                      # how long the rule must hold
 
 model = YOLO("yolo26n.pt")
+KEEP = [i for i, name in model.names.items() if name in NEEDED]   # only look for these
 cap = cv2.VideoCapture(0)
 held_since = None
 unlocked = False
@@ -19,7 +20,7 @@ while True:
     if not ok:
         break
 
-    result = model(frame, verbose=False)[0]
+    result = model(frame, classes=KEEP, verbose=False)[0]
     seen = {result.names[int(box.cls)] for box in result.boxes if box.conf > 0.4}
     frame = result.plot()
 
